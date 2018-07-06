@@ -8,10 +8,6 @@ from bamboo_hr_api import API
 from email_util import EmailUtil
 from employee import Employee
 import os
-import re
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 from project_team import ProjectTeam
 from time_off_reminder import TimeOffReminder
