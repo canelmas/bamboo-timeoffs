@@ -29,7 +29,7 @@ def fetch_project_teams():
 
         with open(os.path.join("teams", team)) as f:
             for line in f:
-                if not line.startswith("#") and line.find("=") != -1:
+                if line.find("=") != -1:
                     fields = COMMA_DELIMITER.split(line[line.index("=") + 1:])
                     # fields = line[line.index("=") + 1:].split(",")
                     if line.startswith("team"):

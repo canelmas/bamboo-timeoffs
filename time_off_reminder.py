@@ -28,29 +28,29 @@ class TimeOffReminder:
         for member in members:
 
             if member.time_offs:
-                timeoffs_this_month = member.get_time_offs_this_month()
+                time_offs_this_month = member.get_time_offs_this_month()
 
-                if timeoffs_this_month:
-                    self.has_time_off(content_this_month, member.fullname)
+                if time_offs_this_month:
+                    self.has_time_off(content_this_month, member)
 
-                    for t in timeoffs_this_month:
+                    for t in time_offs_this_month:
                         self.add_time_off(content_this_month, t)
                 else:
-                    self.no_time_off(content_this_month, member.fullname)
+                    self.no_time_off(content_this_month, member)
 
-                timeoffs_next_month = member.get_time_offs_next_month()
+                time_offs_next_month = member.get_time_offs_next_month()
 
-                if timeoffs_next_month:
-                    self.has_time_off(content_next_month, member.fullname)
+                if time_offs_next_month:
+                    self.has_time_off(content_next_month, member)
 
-                    for t in timeoffs_next_month:
+                    for t in time_offs_next_month:
                         self.add_time_off(content_next_month, t)
                 else:
-                    self.no_time_off(content_next_month, member.fullname)
+                    self.no_time_off(content_next_month, member)
 
             else:
-                self.no_time_off(content_this_month, member.fullname)
-                self.no_time_off(content_next_month, member.fullname)
+                self.no_time_off(content_this_month, member)
+                self.no_time_off(content_next_month, member)
 
         self.end_a_month(content_this_month)
         self.end_a_month(content_next_month)
@@ -58,8 +58,9 @@ class TimeOffReminder:
         return ''.join(content_this_month)
 
     @staticmethod
-    def no_time_off(content, fullname):
-        content.append("<tr><td>{}</td><td> - </td><td>{}</td></tr>".format(fullname, "None"))
+    def no_time_off(content, employee):
+        content.append("<tr><td>{}</td><td> - </td><td>{}</td></tr>".format(
+            employee.fullname if employee.fullname else employee.email, "None"))
 
     @staticmethod
     def start_a_month(datetime):
@@ -71,9 +72,10 @@ class TimeOffReminder:
         content.append("</table>")
 
     @staticmethod
-    def add_time_off(content, timeoff):
-        content.append("<tr><td></td><td></td>{}</tr>".format(timeoff.to_html()))
+    def add_time_off(content, time_off):
+        content.append("<tr><td></td><td></td>{}</tr>".format(time_off.to_html()))
 
     @staticmethod
-    def has_time_off(content, fullname):
-        content.append("<tr><td>{}</td><td></td><td></td></tr>".format(fullname))
+    def has_time_off(content, employee):
+        content.append(
+            "<tr><td>{}</td><td></td><td></td></tr>".format(employee.fullname if employee.fullname else employee.email))
