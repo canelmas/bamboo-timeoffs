@@ -52,18 +52,18 @@ def format_date(datetime: datetime):
     return datetime.strftime("%Y-%m-%d")
 
 
-def get_employee_timeoffs(api: API, employee_id):
+def get_employee_time_offs(api: API, employee_id):
     now = datetime.now()
     two_months_from_now_on = now + relativedelta(months=2)
     return api.get_employee_time_offs(employee_id, format_date(now), format_date(two_months_from_now_on))
 
 
-def fetch_timeoff(api: API, employee: Employee):
+def fetch_employee_time_off(api: API, employee: Employee):
     if employee.id:
-        timeoffs = get_employee_timeoffs(api, employee.id)
+        time_offs = get_employee_time_offs(api, employee.id)
 
-        for data in timeoffs:
-            employee.add_time_off(TimeOff(data))
+        for time_off_data in time_offs:
+            employee.add_time_off(TimeOff(time_off_data))
     else:
         print("Can't fetch timeoff data for {}; employee id not set!".format(employee.email))
 
@@ -72,18 +72,16 @@ def send_reminder(project_team):
     EmailUtil.send(TimeOffReminder(project_team).as_email())
 
 
-def remind_timeoffs(sub_domain, api_key):
+def remind_time_offs(bamboo_api):
     project_teams = fetch_project_teams()
 
     if project_teams:
-
-        bamboo_api = API(sub_domain, api_key)
         employee_directory = bamboo_api.get_list_of_employees()
 
         for team in project_teams:
             for employee in team.members:
                 update_employee_info(employee, employee_directory)
-                fetch_timeoff(bamboo_api, employee)
+                fetch_employee_time_off(bamboo_api, employee)
 
             send_reminder(team)
     else:
@@ -103,4 +101,4 @@ if __name__ == "__main__":
         raise ValueError("No 'bamboo' configuration found. Make sure to set 'API_KEY' and 'SUBDOMAIN' in your "
                          "'bambbo' section of your configuration.")
 
-    remind_timeoffs(config_parser['bamboo']['SUB_DOMAIN'], config_parser['bamboo']['API_KEY'])
+    remind_time_offs(API(config_parser['bamboo']['SUB_DOMAIN'], config_parser['bamboo']['API_KEY']))
