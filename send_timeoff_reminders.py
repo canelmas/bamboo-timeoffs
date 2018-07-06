@@ -20,18 +20,17 @@ from time_off import TimeOff
 COMMA_DELIMITER = re.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
 
 
-def fetch_project_teams():
+def fetch_project_teams(project_team_folder):
     project_teams = []
 
-    for team in os.listdir("teams"):
+    for team in os.listdir(project_team_folder):
 
         project_team = ProjectTeam(team)
 
-        with open(os.path.join("teams", team)) as f:
+        with open(os.path.join(project_team_folder, team)) as f:
             for line in f:
                 if line.find("=") != -1:
                     fields = COMMA_DELIMITER.split(line[line.index("=") + 1:])
-                    # fields = line[line.index("=") + 1:].split(",")
                     if line.startswith("team"):
                         project_team.set_working_members(fields)
                     elif line.startswith("report"):
@@ -72,8 +71,8 @@ def send_reminder(project_team):
     EmailUtil.send(TimeOffReminder(project_team).as_email())
 
 
-def remind_time_offs(bamboo_api):
-    project_teams = fetch_project_teams()
+def remind_time_offs(project_team_folder, bamboo_api):
+    project_teams = fetch_project_teams(project_team_folder)
 
     if project_teams:
         employee_directory = bamboo_api.get_list_of_employees()
@@ -92,6 +91,7 @@ if __name__ == "__main__":
 
     arg_parser = argparse.ArgumentParser(description="Timeoff Reminder CLI")
     arg_parser.add_argument("--config", help="configuration file", required=True)
+    arg_parser.add_argument("--teams", help="project teams folder", required=True)
     args = arg_parser.parse_args()
 
     config_parser = configparser.ConfigParser()
@@ -101,4 +101,4 @@ if __name__ == "__main__":
         raise ValueError("No 'bamboo' configuration found. Make sure to set 'API_KEY' and 'SUBDOMAIN' in your "
                          "'bambbo' section of your configuration.")
 
-    remind_time_offs(API(config_parser['bamboo']['SUB_DOMAIN'], config_parser['bamboo']['API_KEY']))
+    remind_time_offs(args.teams, API(config_parser['bamboo']['SUB_DOMAIN'], config_parser['bamboo']['API_KEY']))
