@@ -17,7 +17,7 @@ class Employee:
 
     def get_time_offs_this_month(self):
         return None if not self.time_offs else list(
-            filter(lambda t: t.start.month == datetime.today().month, self.time_offs))
+            filter(lambda t: t.start.month == datetime.today().month and datetime.today() > t.end, self.time_offs))
 
     def get_time_offs_next_month(self):
         return None if not self.time_offs else list(
