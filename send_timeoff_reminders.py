@@ -17,8 +17,6 @@ from project_team import ProjectTeam
 from time_off_reminder import TimeOffReminder
 from time_off import TimeOff
 
-COMMA_DELIMITER = re.compile(''',(?=(?:[^"]*"[^"]*")*[^"]*$)''')
-
 
 def fetch_project_teams(project_team_folder):
     project_teams = []
@@ -30,7 +28,7 @@ def fetch_project_teams(project_team_folder):
         with open(os.path.join(project_team_folder, team)) as f:
             for line in f:
                 if line.find("=") != -1:
-                    fields = COMMA_DELIMITER.split(line[line.index("=") + 1:])
+                    fields = line[line.index("=") + 1:].split(',')
                     if line.startswith("team"):
                         project_team.set_working_members(fields)
                     elif line.startswith("report"):

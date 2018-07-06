@@ -9,15 +9,18 @@ class ProjectTeam:
         self.members = []
         self.reports = []
 
-    def set_working_members(self, members):
-        for email in members:
-            if validate_email(email):
-                self.members.append(Employee(email))
+    def set_working_members(self, emails):
+        self.__add_employee(emails, self.members)
 
-    def set_reporting_members(self, reporting_members):
-        for email in reporting_members:
+    def set_reporting_members(self, emails):
+        self.__add_employee(emails, self.reports)
+
+    def __add_employee(self, employee_emails, employee_list):
+        for email in employee_emails:
+            email = email.strip(' \t\n\r')
             if validate_email(email):
-                self.reports.append(Employee(email))
+                employee_list.append(Employee(email))
+                print(email)
 
     def __str__(self) -> str:
         return "name={}, members={}, reports={}".format(self.name, self.members, self.reports)
