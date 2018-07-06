@@ -73,8 +73,6 @@ def send_reminder(project_team):
 
 
 def remind_timeoffs(sub_domain, api_key):
-    print(sub_domain)
-    print(api_key)
     project_teams = fetch_project_teams()
 
     if project_teams:

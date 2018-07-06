@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+*.idea
+api.md
+employees
+teams/phoenix
+config/config-prod.ini
