@@ -20,7 +20,6 @@ class ProjectTeam:
             email = email.strip(' \t\n\r')
             if validate_email(email):
                 employee_list.append(Employee(email))
-                print(email)
 
     def __str__(self) -> str:
         return "name={}, members={}, reports={}".format(self.name, self.members, self.reports)

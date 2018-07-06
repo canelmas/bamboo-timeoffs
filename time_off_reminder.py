@@ -14,13 +14,13 @@ class TimeOffReminder:
     def __init__(self, project_team: ProjectTeam) -> None:
         self.subject = SUBJECT.format(project_team.name)
         self.fromm = FROM
-        self.to = [report_to for report_to in project_team.reports]
+        self.to = [report_to.email for report_to in project_team.reports]
         self.members = [member for member in project_team.members]
 
     def as_email(self):
-        return self.subject, self.fromm, self.to, self.__format_timeoffs(self.members)
+        return self.subject, self.fromm, self.to, self.__format_time_offs_in_html(self.members)
 
-    def __format_timeoffs(self, members):
+    def __format_time_offs_in_html(self, members):
 
         content_this_month = self.start_a_month(datetime.now())
         content_next_month = self.start_a_month(datetime.now() + relativedelta(months=1))
@@ -55,7 +55,11 @@ class TimeOffReminder:
         self.end_a_month(content_this_month)
         self.end_a_month(content_next_month)
 
-        return ''.join(content_this_month)
+        return self.compose_html_content(''.join(content_this_month))
+
+    @staticmethod
+    def compose_html_content(time_off_content):
+        return "<html><head></head><body>{}</body></html>".format(time_off_content)
 
     @staticmethod
     def no_time_off(content, employee):
