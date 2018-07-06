@@ -22,7 +22,7 @@ class TimeOff:
                                                                                                  DATE_FORMAT_EMAIL))
 
     def is_passed(self):
-        return datetime.now() > datetime(date.today().year, date.today().month, date.today().day, 23, 59, 59)
+        return datetime.now() > datetime(self.end.year, self.end.month, self.end.day, 23, 59, 59)
 
     def __str__(self) -> str:
         return "name={}, amount={}, status={} start={} end={}".format(self.employee, self.amount, self.status,
