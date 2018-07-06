@@ -4,9 +4,17 @@
 * Format time offs
 * Email time off reminder to each employee listed in ```report``` section
 
-projec team file format
+#### Team File
 ```
+# Sample
 team=<comma separated employee emails for whom time offs will be fetched>  
 report=<comma separated employee emails to whom reminder email will be sent to>
+```
+
+#### Config.ini
+```python
+[bamboo]
+SUB_DOMAIN = xyz
+API_KEY = bamboo_hr_api_key
 ```
 
