@@ -38,10 +38,10 @@ class API:
         params = {'employeeId': employee_id}
 
         if start_date:
-            params['start'] = start_date
+            params['start'] = start_date.strftime("%Y-%m-%d")
 
         if end_date:
-            params['end'] = end_date
+            params['end'] = end_date.strftime("%Y-%m-%d")
 
         if type:
             params['type'] = type

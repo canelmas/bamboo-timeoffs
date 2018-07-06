@@ -47,14 +47,10 @@ def update_employee_info(employee: Employee, employee_directory):
             employee.fullname = item['displayName']
 
 
-def format_date(datetime: datetime):
-    return datetime.strftime("%Y-%m-%d")
-
-
 def get_employee_time_offs(api: API, employee_id):
     now = datetime.now()
     two_months_from_now_on = now + relativedelta(months=2)
-    return api.get_employee_time_offs(employee_id, format_date(now), format_date(two_months_from_now_on))
+    return api.get_employee_time_offs(employee_id, now, two_months_from_now_on)
 
 
 def fetch_employee_time_off(api: API, employee: Employee):
