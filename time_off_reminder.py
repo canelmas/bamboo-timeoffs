@@ -33,7 +33,7 @@ class TimeOffReminder:
 
                 if time_offs_this_month:
                     for t in time_offs_this_month:
-                        TimeOffReminder.add_time_off(content_this_month, t, member.photoUrl)
+                        TimeOffReminder.add_time_off(content_this_month, t)
                 else:
                     TimeOffReminder.no_time_off(content_this_month, member)
 
@@ -41,7 +41,7 @@ class TimeOffReminder:
 
                 if time_offs_next_month:
                     for t in time_offs_next_month:
-                        TimeOffReminder.add_time_off(content_next_month, t, member.photoUrl)
+                        TimeOffReminder.add_time_off(content_next_month, t)
                 else:
                     TimeOffReminder.no_time_off(content_next_month, member)
 
@@ -90,8 +90,8 @@ class TimeOffReminder:
        </td></tr>""".format(time_month.strftime("%B"))]
 
     @staticmethod
-    def add_time_off(content, time_off, photo_url):
-        content.append(time_off.to_html_2(photo_url))
+    def add_time_off(content, time_off):
+        content.append(time_off.to_html())
 
     @staticmethod
     def start_html(team_name):

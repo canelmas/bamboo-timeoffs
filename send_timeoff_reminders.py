@@ -51,7 +51,7 @@ def fetch_employee_time_off(api: BambooHRApi, employee: Employee):
         time_offs = get_employee_time_offs(api, employee.id)
 
         for time_off_data in time_offs:
-            employee.add_time_off(TimeOff(time_off_data))
+            employee.add_time_off(TimeOff(time_off_data, employee.photoUrl, employee.id))
     else:
         print("Can't fetch timeoff data for {}; employee id not set!".format(employee.email))
 

@@ -5,15 +5,17 @@ DATE_FORMAT_BAMBOO = "%Y-%m-%d"
 
 class TimeOff:
 
-    def __init__(self, data) -> None:
+    def __init__(self, data, employee_photo_url, employee_id) -> None:
         self.start = datetime.strptime(data['start'], DATE_FORMAT_BAMBOO)
         self.end = datetime.strptime(data['end'], DATE_FORMAT_BAMBOO)
         self.dates = data['dates']
         self.status = data['status']['status']
         self.amount = float(data['amount']['amount'])
         self.employee_name = data['name']
+        self.employee_photo_url = employee_photo_url
+        self.employee_id = employee_id
 
-    def to_html_2(self, employee_photo_url):
+    def to_html(self):
         return """
         <tr>
         <td bgcolor="#ffffff" colspan="3"
@@ -71,7 +73,7 @@ class TimeOff:
                     </td>
                     <td style="padding-left:9px; vertical-align:top">
                         <p style="margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, san-serif, serif, EmojiFont; font-size: 14px; color: rgb(136, 136, 136); line-height: 15px;">
-                            <a href="https://commencis.bamboohr.com/employees/employee.php?id=184&amp;utm_swu=6071"
+                            <a href="https://commencis.bamboohr.com/employees/employee.php?id={}&amp;utm_swu=6071"
                                target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"
                                style="display:inline-block; color:#006ec2; text-decoration:none">{}</a><br>
                             Vacation<br>
@@ -83,11 +85,12 @@ class TimeOff:
             </table>
         </td>
     </tr> 
-        """.format(employee_photo_url,
+        """.format(self.employee_photo_url,
                    datetime.strftime(self.start, "%B"),
                    datetime.strftime(self.start, "%d"),
                    datetime.strftime(self.end, "%B"),
                    datetime.strftime(self.end, "%d"),
+                   self.employee_id,
                    self.amount,
                    self.employee_name)
 
@@ -95,7 +98,8 @@ class TimeOff:
         return datetime.now() > datetime(self.end.year, self.end.month, self.end.day, 23, 59, 59)
 
     def __str__(self) -> str:
-        return "name={}, amount={}, status={} start={} end={}".format(self.employee_name,
-                                                                      self.amount, self.status,
-                                                                      self.start,
-                                                                      self.end)
+        return "name={}, id={}, amount={}, status={} start={} end={}".format(self.employee_name,
+                                                                             self.employee_id,
+                                                                             self.amount, self.status,
+                                                                             self.start,
+                                                                             self.end)
