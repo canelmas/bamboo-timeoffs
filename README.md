@@ -16,5 +16,9 @@ report=<comma separated employee emails to whom reminder email will be sent to>
 [bamboo]
 SUB_DOMAIN = xyz
 API_KEY = bamboo_hr_api_key
+
+[smtp]
+HOST = smtp_host
+PORT = smtp_port
 ```
 
