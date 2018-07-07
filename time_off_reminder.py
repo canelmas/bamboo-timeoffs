@@ -1,12 +1,10 @@
 import datetime
+
 from datetime import datetime
-
 from dateutil.relativedelta import *
-
 from project_team import ProjectTeam
 
 SUBJECT = "Time Off Reminder for the project team '{}'"
-FROM = "timeoffreminder@commencis.com"
 
 
 class TimeOffReminder:
@@ -14,12 +12,11 @@ class TimeOffReminder:
     def __init__(self, project_team: ProjectTeam) -> None:
         self.team_name = project_team.name
         self.subject = SUBJECT.format(self.team_name)
-        self.fromm = FROM
         self.to = [report_to.email for report_to in project_team.reports]
         self.members = [member for member in project_team.members]
 
     def as_email(self):
-        return self.subject, self.fromm, self.to, self.__format_time_offs_in_html(self.members, self.team_name)
+        return self.subject, self.to, self.__format_time_offs_in_html(self.members, self.team_name)
 
     @staticmethod
     def __format_time_offs_in_html(members, team_name):

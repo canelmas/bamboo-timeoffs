@@ -1,12 +1,12 @@
-from datetime import datetime
-
-from dateutil.relativedelta import relativedelta
-
 import time_off
+
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 class Employee:
-    def __init__(self, email):
+
+    def __init__(self, email) -> None:
         self.email = email
         self.id = -1
         self.time_offs = []

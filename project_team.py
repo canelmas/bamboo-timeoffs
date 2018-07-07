@@ -1,10 +1,10 @@
 from validate_email import validate_email
-
 from employee import Employee
 
 
 class ProjectTeam:
-    def __init__(self, name):
+
+    def __init__(self, name) -> None:
         self.name = name
         self.members = []
         self.reports = []

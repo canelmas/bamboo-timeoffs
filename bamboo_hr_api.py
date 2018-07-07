@@ -5,7 +5,7 @@ HEADER_ACCEPT_JSON = "Accept: application/json"
 DATA_TYPE = "json"
 
 
-class API:
+class BambooHRApi:
     def __init__(self, sub_domain, api_key):
 
         if not sub_domain:

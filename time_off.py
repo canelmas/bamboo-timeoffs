@@ -4,7 +4,8 @@ DATE_FORMAT_BAMBOO = "%Y-%m-%d"
 
 
 class TimeOff:
-    def __init__(self, data):
+
+    def __init__(self, data) -> None:
         self.start = datetime.strptime(data['start'], DATE_FORMAT_BAMBOO)
         self.end = datetime.strptime(data['end'], DATE_FORMAT_BAMBOO)
         self.dates = data['dates']

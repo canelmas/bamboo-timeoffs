@@ -1,14 +1,12 @@
 import argparse
 import configparser
-from datetime import datetime
-
-from dateutil.relativedelta import relativedelta
-
-from bamboo_hr_api import API
-from email_util import EmailUtil
-from employee import Employee
 import os
 
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from bamboo_hr_api import BambooHRApi
+from email_util import EmailUtil, SMTPConfig
+from employee import Employee
 from project_team import ProjectTeam
 from time_off_reminder import TimeOffReminder
 from time_off import TimeOff
@@ -42,13 +40,13 @@ def update_employee_info(employee: Employee, employee_directory):
             employee.photoUrl = item['photoUrl']
 
 
-def get_employee_time_offs(api: API, employee_id):
+def get_employee_time_offs(api: BambooHRApi, employee_id):
     now = datetime.now()
     two_months_from_now_on = now + relativedelta(months=2)
     return api.get_employee_time_offs(employee_id, now, two_months_from_now_on)
 
 
-def fetch_employee_time_off(api: API, employee: Employee):
+def fetch_employee_time_off(api: BambooHRApi, employee: Employee):
     if employee.id:
         time_offs = get_employee_time_offs(api, employee.id)
 
@@ -58,11 +56,11 @@ def fetch_employee_time_off(api: API, employee: Employee):
         print("Can't fetch timeoff data for {}; employee id not set!".format(employee.email))
 
 
-def send_reminder(project_team):
-    EmailUtil.send(TimeOffReminder(project_team).as_email())
+def send_reminder(project_team, smtp_config):
+    EmailUtil.send(TimeOffReminder(project_team).as_email(), smtp_config)
 
 
-def remind_time_offs(project_team_folder, bamboo_api):
+def remind_time_offs(project_team_folder, bamboo_api, smtp_config):
     project_teams = fetch_project_teams(project_team_folder)
 
     if project_teams:
@@ -73,23 +71,28 @@ def remind_time_offs(project_team_folder, bamboo_api):
                 update_employee_info(employee, employee_directory)
                 fetch_employee_time_off(bamboo_api, employee)
 
-            send_reminder(team)
+            send_reminder(team, smtp_config)
     else:
         print("No project team found!")
 
 
 if __name__ == "__main__":
 
-    arg_parser = argparse.ArgumentParser(description="Timeoff Reminder CLI")
+    arg_parser = argparse.ArgumentParser(description="BambooHR Time Off Reminder")
     arg_parser.add_argument("--config", help="configuration file", required=True)
-    arg_parser.add_argument("--teams", help="project teams folder", required=True)
+    arg_parser.add_argument("--teams", help="project teams folder path", required=True)
     args = arg_parser.parse_args()
 
     config_parser = configparser.ConfigParser()
     config_parser.read(args.config)
 
     if 'bamboo' not in config_parser.sections():
-        raise ValueError("No 'bamboo' configuration found. Make sure to set 'API_KEY' and 'SUBDOMAIN' in your "
-                         "'bambbo' section of your configuration.")
+        raise ValueError("No 'bamboo' configuration found. Make sure to set 'api_key' and 'sub_domain'")
 
-    remind_time_offs(args.teams, API(config_parser['bamboo']['SUB_DOMAIN'], config_parser['bamboo']['API_KEY']))
+    if 'smtp' not in config_parser.sections():
+        raise ValueError("No 'smtp' configuration found. Make sure to set 'host', 'port' and 'from'")
+
+    remind_time_offs(args.teams,
+                     BambooHRApi(config_parser['bamboo']['sub_domain'], config_parser['bamboo']['api_key']),
+                     SMTPConfig(config_parser['smtp']['host'], config_parser['smtp']['from'],
+                                config_parser['smtp']['port']))
