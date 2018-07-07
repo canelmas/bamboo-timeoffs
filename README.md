@@ -12,7 +12,7 @@ report=<comma separated employee emails to whom reminder email will be sent to>
 ```
 
 #### Config.ini
-```python
+```
 [bamboo]
 sub_domain =xyz
 api_key=bamboo_hr_api_key
