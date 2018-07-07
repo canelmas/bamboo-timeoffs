@@ -10,7 +10,8 @@ class Employee:
         self.email = email
         self.id = -1
         self.time_offs = []
-        self.fullname = ""
+        self.fullname = None
+        self.photoUrl = None
 
     def add_time_off(self, timeoff: time_off):
         self.time_offs.append(timeoff)

@@ -39,6 +39,7 @@ def update_employee_info(employee: Employee, employee_directory):
         if item['workEmail'] == employee.email:
             employee.id = item['id']
             employee.fullname = item['displayName']
+            employee.photoUrl = item['photoUrl']
 
 
 def get_employee_time_offs(api: API, employee_id):
