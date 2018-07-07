@@ -14,11 +14,12 @@ report=<comma separated employee emails to whom reminder email will be sent to>
 #### Config.ini
 ```python
 [bamboo]
-SUB_DOMAIN = xyz
-API_KEY = bamboo_hr_api_key
+sub_domain =xyz
+api_key=bamboo_hr_api_key
 
 [smtp]
-HOST = smtp_host
-PORT = smtp_port
+host=smtp_host
+port=smtp_port
+from=from_mail_address
 ```
 
