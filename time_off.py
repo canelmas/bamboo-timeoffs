@@ -1,7 +1,7 @@
 from datetime import datetime
 
 DATE_FORMAT_BAMBOO = "%Y-%m-%d"
-STATUS_LIST_TO_DISPLAY = ['declined', 'canceled', 'denied']
+STATUS_LIST_TO_DISPLAY = ['approved', 'requested']
 
 
 class TimeOff:
@@ -77,7 +77,7 @@ class TimeOff:
                         <p style="margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, san-serif, serif, EmojiFont; font-size: 14px; color: rgb(136, 136, 136); line-height: 15px;">
                             <a href="https://commencis.bamboohr.com/employees/employee.php?id={}&amp;utm_swu=6071"
                                target="_blank" rel="noopener noreferrer" data-auth="NotApplicable"
-                               style="display:inline-block; color:#006ec2; text-decoration:none">{}</a>{}<br>
+                               style="display:inline-block; color:#006ec2; text-decoration:none">{}</a><br>
                             Vacation<br>
                             <span style="color:#222222"></span><span
                                 style="color:#548400; font-weight:600">{}</span></p>
@@ -94,11 +94,7 @@ class TimeOff:
                    datetime.strftime(self.end, "%d"),
                    self.employee_id,
                    self.amount,
-                   self.__format_status() if self.status in STATUS_LIST_TO_DISPLAY else "",
                    self.employee_name)
-
-    def __format_status(self):
-        return """<span style="color:red; margin-left: 5px; font-style:italic">({})</span>""".format(self.status)
 
     def is_passed(self):
         return datetime.now() > datetime(self.end.year, self.end.month, self.end.day, 23, 59, 59)
