@@ -108,4 +108,4 @@ api.md
 employees
 teams/phoenix
 config/config-prod.ini
-to_terry.sh
+copy_to_terry.sh
