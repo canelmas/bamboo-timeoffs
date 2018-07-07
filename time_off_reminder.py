@@ -86,7 +86,7 @@ class TimeOffReminder:
     @staticmethod
     def start_a_month(time_month):
         return ["""<tr><td style="padding:10px 40px; border-left:solid #bebebe 1px; border-right:solid #bebebe 1px" bgcolor="white">
-           <p style="margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, san-serif, serif, EmojiFont; font-size: 14px; color: A3256A; line-height: 15px; font-weight:600">{}</p>
+           <p style="margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, san-serif, serif, EmojiFont; font-size: 14px; color: #A3256A; line-height: 25px; font-weight:600">{}</p>
        </td></tr>""".format(time_month.strftime("%B"))]
 
     @staticmethod
