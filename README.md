@@ -1,13 +1,19 @@
-BambooHR is limited with a notification system based only with the organizational structure that you provide at the very beginning, while
-setting up your instance i.e. you only get notified about your direct team's approaching time offs, requests, approvals etc. 
+## What?
 
-If getting notified about time offs of a custom employee groups (project teams), consisted of people from different organizational departments 
-is a requirement, this repo may deliver that basically, with a cron job fetching data from bambooHR api and sending emails for each manually created 
-project team.    
+Getting notified about time offs of a custom employee groups (project teams), consisted of people from different organizational departments.
+
+## Why?
+
+A project team is usually consisted of employees from different departments. We need a way to inform project teams and/or 
+project managers about team's incoming time offs.
+  
+## How?
+
+A cron job fetches time offs of each employee listed in a team file and sends emails to people specified.  
 
 #### Team File Structure
 ```
-# Sample
+# sample  team file
 team=<comma separated employee emails for whom time offs will be fetched>  
 report=<comma separated employee emails to whom reminder email will be sent to>
 ```
