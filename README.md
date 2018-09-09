@@ -9,20 +9,32 @@ project managers about team's incoming time offs.
   
 ## How?
 
-A cron job fetches time offs of each employee listed in a team file and sends emails to people specified.  
+A cron job fetches time offs of each employee of each project team and sends emails to people specified.
 
-#### Team File Structure
+You can either use static project team files or Tempo API.
+
+### Team Files
+
+Directory containing project team files can be specified with the command line parameter **--teams**.   
+
 ```
-# sample  team file
+# team_xyz 
 team=<comma separated employee emails for whom time offs will be fetched>  
 report=<comma separated employee emails to whom reminder email will be sent to>
 ```
+### Tempo API
 
-#### Config.ini
+By default Tempo API is used to fetch project teams, team members and project lead. 
+
+### Configuration
 ```
 [bamboo]
 sub_domain =xyz
 api_key=bamboo_hr_api_key
+
+[tempo]
+url = tempo_url
+token = tempo_basic_auth_token
 
 [smtp]
 host=smtp_host
