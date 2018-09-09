@@ -25,7 +25,7 @@ report=<comma separated employee emails to whom reminder email will be sent to>
 
 ### Tempo API
 
-By default Tempo API is used to fetch project teams, team members and project lead. 
+By default [Tempo Timesheets API](https://marketplace.atlassian.com/apps/6572/tempo-timesheets) is used to fetch project teams, team members and project leads. 
 
 ### Configuration
 
