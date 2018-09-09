@@ -22,11 +22,13 @@ Directory containing project team files can be specified with the command line p
 team=<comma separated employee emails for whom time offs will be fetched>  
 report=<comma separated employee emails to whom reminder email will be sent to>
 ```
+
 ### Tempo API
 
 By default Tempo API is used to fetch project teams, team members and project lead. 
 
 ### Configuration
+
 ```
 [bamboo]
 sub_domain =xyz
