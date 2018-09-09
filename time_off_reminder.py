@@ -4,7 +4,7 @@ from datetime import datetime
 from dateutil.relativedelta import *
 from project_team import ProjectTeam
 
-SUBJECT = "Time Off Reminder for the team '{}'"
+SUBJECT = "Time Off Reminder - '{}'"
 
 
 class TimeOffReminder:

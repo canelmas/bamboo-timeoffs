@@ -16,7 +16,6 @@ class EmailUtil:
 
     @staticmethod
     def send(data, smtp_config: SMTPConfig):
-        # print("subject={}\nfrom={}\nto={}\ncontent={}\n".format(data[0], smtp_config.mail_from, data[1], data[2]))
         msg = MIMEMultipart('alternative')
         msg['Subject'] = data[0]
         msg['To'] = ', '.join(data[1])

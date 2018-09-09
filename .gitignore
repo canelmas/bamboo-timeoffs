@@ -106,6 +106,6 @@ venv.bak/
 *.idea
 api.md
 employees
-teams/phoenix
 config/config-prod.ini
-copy_to_terry.sh
+to_terry.sh
+sample.sh

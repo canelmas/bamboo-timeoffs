@@ -13,7 +13,7 @@ class Employee:
         self.fullname = None
         self.photoUrl = None
 
-    def add_time_off(self, timeoff: time_off):
+    def add_time_off(self, timeoff: time_off.TimeOff):
         self.time_offs.append(timeoff)
 
     def get_time_offs_this_month(self):
@@ -27,5 +27,5 @@ class Employee:
             filter(lambda t: t.start.month == (datetime.now() + relativedelta(months=1)).month
                              and t.status in time_off.STATUS_LIST_TO_DISPLAY, self.time_offs))
 
-    def __str__(self) -> str:
-        return "email={} fullname= {} id={} timeoffs={}".format(self.email, self.fullname, self.id, self.time_offs)
+    def __repr__(self) -> str:
+        return "email={}".format(self.email)

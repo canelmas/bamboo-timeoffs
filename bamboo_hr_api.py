@@ -1,11 +1,9 @@
-import requests
+from base_api import BaseApi
 
 BAMBOO_HR_API_URL = "https://api.bamboohr.com/api/gateway.php/{}/v1"
-HEADER_ACCEPT_JSON = "Accept: application/json"
-DATA_TYPE = "json"
 
 
-class BambooHRApi:
+class BambooHRApi(BaseApi):
     def __init__(self, sub_domain, api_key):
 
         if not sub_domain:
@@ -14,21 +12,14 @@ class BambooHRApi:
         if not api_key:
             raise ValueError("Please pass a valid 'apikey'")
 
-        # json only for now
-        self.data_type = DATA_TYPE
-
-        self.headers = {"Accept": "application/json"}
-
-        self.base_url = BAMBOO_HR_API_URL.format(sub_domain)
-
-        self.api_key = api_key
+        super().__init__(BAMBOO_HR_API_URL.format(sub_domain), api_key=api_key)
 
     def get_list_of_employees(self):
-        data = self.__get("/employees/directory")
+        data = self.get("/employees/directory")
         return data['employees']
 
     def get_employee(self, employee_id):
-        return self.__get("/employees/{}".format(employee_id))
+        return self.get("/employees/{}".format(employee_id))
 
     def get_employee_time_offs(self, employee_id, start_date=None, end_date=None, type=None):
 
@@ -46,9 +37,4 @@ class BambooHRApi:
         if type:
             params['type'] = type
 
-        return self.__get("/time_off/requests", params=params)
-
-    def __get(self, url, params=None):
-        r = requests.get(self.base_url + url, params=params, headers=self.headers, auth=(self.api_key, 'X'))
-        r.raise_for_status()
-        return r.json()
+        return self.get("/time_off/requests", params=params)
