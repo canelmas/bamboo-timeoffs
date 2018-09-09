@@ -80,7 +80,7 @@ def fetch_employee_time_offs(api: BambooHRApi, employee_id):
 
 def send_reminder(project_team, smtp_config):
     log.info("reminding \"{}\" timeoffs to \"{}\"".format(project_team.name, project_team.reports))
-    # EmailUtil.send(TimeOffReminder(project_team).as_email(), smtp_config)
+    EmailUtil.send(TimeOffReminder(project_team).as_email(), smtp_config)
 
 
 def read_project_team_files_and_remind(smtp_config, bamboo_api):
