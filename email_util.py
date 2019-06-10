@@ -15,14 +15,16 @@ class SMTPConfig:
 class EmailUtil:
 
     @staticmethod
-    def send(data, smtp_config: SMTPConfig):
+    def send(data, smtp_config: SMTPConfig, recipients=None):
+        to_list = data[1] if not recipients else recipients
+
         msg = MIMEMultipart('alternative')
         msg['Subject'] = data[0]
-        msg['To'] = ', '.join(data[1])
+        msg['To'] = ', '.join(to_list)
         msg['From'] = smtp_config.mail_from
 
         msg.attach(MIMEText(data[2], 'html'))
 
         s = smtplib.SMTP(host=smtp_config.host, port=smtp_config.port)
-        s.sendmail(smtp_config.mail_from, data[1], msg.as_string())
+        s.sendmail(smtp_config.mail_from, to_list, msg.as_string())
         s.quit()

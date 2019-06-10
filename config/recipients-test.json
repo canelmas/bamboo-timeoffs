@@ -1,0 +1,5 @@
+{
+  "Project Nova": [ "xyz@mail.com", "abc@mail.com"]
+}
+
+// instead of the project lead, these two recipients will get the timeoff reminder email

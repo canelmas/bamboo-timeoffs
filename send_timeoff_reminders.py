@@ -3,6 +3,7 @@ import configparser
 import os
 import json
 import re
+import smtplib
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -14,7 +15,7 @@ from employee import Employee
 from project_team import ProjectTeam
 from tempo_api import TempoApi
 from time_off_reminder import TimeOffReminder
-from time_off import TimeOff
+from time_off import TimeOff, STATUS_TYPES_ALLOWED
 from logger import get_logger
 
 REG_PATTERN_PROJECT_TEAM = re.compile("PT\s(.*)")
@@ -23,6 +24,8 @@ REG_PATTERN_FUNCTIONAL_TEAM = re.compile("FT\s((.+)-(\d+))")
 log = get_logger()
 
 time_off_cache = {}
+
+TIMEOFF_STATUS_PARAMS = "approved,requested"
 
 
 def read_and_populate_project_teams(project_team_folder):
@@ -75,15 +78,16 @@ def get_employee_time_offs(api: BambooHRApi, employee_id):
 def fetch_employee_time_offs(api: BambooHRApi, employee_id):
     now = datetime.now()
     two_months_from_now_on = now + relativedelta(months=2)
-    return api.get_employee_time_offs(employee_id, now, two_months_from_now_on)
+    return api.get_employee_time_offs(employee_id, now, two_months_from_now_on, STATUS_TYPES_ALLOWED)
 
 
-def send_reminder(project_team, smtp_config):
-    log.info("reminding \"{}\" timeoffs to \"{}\"".format(project_team.name, project_team.reports))
-    EmailUtil.send(TimeOffReminder(project_team).as_email(), smtp_config)
+def send_reminder(project_team, smtp_config, recipients=None):
+    log.info("reminding \"{}\" timeoffs to \"{}\"".format(project_team.name,
+                                                          project_team.reports if not recipients else recipients))
+    EmailUtil.send(TimeOffReminder(project_team).as_email(), smtp_config, recipients)
 
 
-def read_project_team_files_and_remind(smtp_config, bamboo_api):
+def read_project_team_files_and_remind(smtp_config, bamboo_api, recipients=None):
     project_teams = read_and_populate_project_teams(project_team_folder)
 
     if project_teams:
@@ -94,7 +98,7 @@ def read_project_team_files_and_remind(smtp_config, bamboo_api):
                 append_employee_info(employee, employee_directory)
                 append_employee_time_offs(employee, bamboo_api)
 
-            send_reminder(team, smtp_config)
+            send_reminder(team, smtp_config, recipients.get(team.name))
     else:
         log.debug("No project team found.")
 
@@ -103,14 +107,14 @@ def is_team_member_active(member):
     return member["member"]["activeInJira"]
 
 
-def get_commencis_email(member_full_name):
+def get_email(member_full_name):
     return "{}@commencis.com".format(member_full_name)
 
 
 def append_team_members(team: ProjectTeam, tempo_api):
     team_members = tempo_api.get_team_members(team.id)
     team_member_emails = list(filter(is_team_member_active, team_members))
-    team_member_emails = list(map(lambda member: get_commencis_email(member["member"]["name"]), team_member_emails))
+    team_member_emails = list(map(lambda member: get_email(member["member"]["name"]), team_member_emails))
     team.set_working_members(team_member_emails)
     return Observable.create(lambda obs: obs.on_next(team))
 
@@ -134,21 +138,27 @@ def filter_teams(team):
     return REG_PATTERN_FUNCTIONAL_TEAM.match(team["name"]) or REG_PATTERN_PROJECT_TEAM.match(team["name"])
 
 
-def fetch_project_teams_and_remind(smtp_config, bamboo_api, tempo_api):
-    employee_directory = bamboo_api.get_list_of_employees()
+def fetch_project_teams_and_remind(smtp_config, bamboo_api, tempo_api, recipients=None):
+    try:
+        employee_directory = bamboo_api.get_list_of_employees()
 
-    Observable.from_list(tempo_api.get_all_teams()) \
-        .filter(filter_teams) \
-        .flat_map(lambda team: Observable.create(lambda obs: obs.on_next(ProjectTeam(team["name"],
-                                                                                     get_commencis_email(team["lead"]),
-                                                                                     team["id"])))) \
-        .flat_map(lambda team: append_team_members(team, tempo_api)) \
-        .map(lambda team: append_team_member_details(team, employee_directory)) \
-        .map(lambda team: append_team_time_offs(team, bamboo_api)) \
-        .subscribe(lambda team: send_reminder(team, smtp_config))
+        Observable.from_list(tempo_api.get_all_teams()) \
+            .filter(filter_teams) \
+            .flat_map(lambda team: Observable.create(lambda obs: obs.on_next(ProjectTeam(team["name"],
+                                                                                         get_email(team["lead"]),
+                                                                                         team["id"])))) \
+            .flat_map(lambda team: append_team_members(team, tempo_api)) \
+            .map(lambda team: append_team_member_details(team, employee_directory)) \
+            .map(lambda team: append_team_time_offs(team, bamboo_api)) \
+            .subscribe(lambda team: send_reminder(team, smtp_config, recipients.get(team.name)))
+    except smtplib.SMTPException:
+        log.exception('SMTP Error!')
+        pass
+    except Exception:
+        log.exception("Something went wrong!")
 
 
-def remind_time_offs(config_smtp, config_bamboo, **kwargs):
+def remind_time_offs(config_smtp, config_bamboo, recipients=None, **kwargs):
     smtp_config = SMTPConfig(config_smtp['host'],
                              config_smtp['from'],
                              config_smtp['port'])
@@ -157,16 +167,28 @@ def remind_time_offs(config_smtp, config_bamboo, **kwargs):
                              config_bamboo['api_key'])
 
     if "tempo_api" in kwargs.keys():
-        fetch_project_teams_and_remind(smtp_config, bamboo_api, TempoApi(kwargs.get("tempo_api")["url"],
-                                                                         kwargs.get("tempo_api")["token"]))
+        fetch_project_teams_and_remind(smtp_config,
+                                       bamboo_api,
+                                       TempoApi(kwargs.get("tempo_api")["url"], kwargs.get("tempo_api")["token"]),
+                                       recipients)
     else:
-        read_project_team_files_and_remind(smtp_config, bamboo_api)
+        read_project_team_files_and_remind(smtp_config, bamboo_api, recipients)
+
+
+def read_recipients(extras_file):
+    try:
+        with open(extras_file, mode='r', encoding='utf8') as file:
+            return json.load(file)
+    finally:
+        file.close()
 
 
 def execute():
     arg_parser = argparse.ArgumentParser(description="BambooHR Time Off Reminder CLI")
     arg_parser.add_argument("--config", help="configuration file", required=True)
     arg_parser.add_argument("--teams", help="project teams folder path", required=False)
+    arg_parser.add_argument("--recipients", help="Recipients json file. By default project lead is the only recipient",
+                            required=False)
     args = arg_parser.parse_args()
 
     config_parser = configparser.ConfigParser()
@@ -178,6 +200,8 @@ def execute():
     if 'smtp' not in config_parser.sections():
         raise KeyError("'smtp' section missing. Make sure to set 'host', 'port' and 'from'.")
 
+    recipients = None if not args.recipients else read_recipients(args.recipients)
+
     if "tempo" in config_parser.sections():
 
         if "url" not in config_parser["tempo"]:
@@ -188,11 +212,13 @@ def execute():
 
         remind_time_offs(config_parser["smtp"],
                          config_parser["bamboo"],
+                         recipients,
                          tempo_api=config_parser["tempo"])
 
     else:
         remind_time_offs(config_parser['smtp'],
                          config_parser["bamboo"],
+                         recipients,
                          teams=args.teams)
 
 

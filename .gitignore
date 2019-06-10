@@ -107,5 +107,6 @@ venv.bak/
 api.md
 employees
 config/config-prod.ini
-to_terry.sh
+config/recipients-prod.json
+copy.sh
 sample.sh
