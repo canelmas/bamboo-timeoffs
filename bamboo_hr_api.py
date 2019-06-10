@@ -21,7 +21,7 @@ class BambooHRApi(BaseApi):
     def get_employee(self, employee_id):
         return self.get("/employees/{}".format(employee_id))
 
-    def get_employee_time_offs(self, employee_id, start_date=None, end_date=None, type=None):
+    def get_employee_time_offs(self, employee_id, start_date=None, end_date=None, status=None):
 
         if not employee_id:
             raise ValueError("Please pass an employee id")
@@ -34,7 +34,7 @@ class BambooHRApi(BaseApi):
         if end_date:
             params['end'] = end_date.strftime("%Y-%m-%d")
 
-        if type:
-            params['type'] = type
+        if status:
+            params['status'] = status
 
         return self.get("/time_off/requests", params=params)
