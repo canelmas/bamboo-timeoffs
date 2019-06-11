@@ -15,7 +15,7 @@ from employee import Employee
 from project_team import ProjectTeam
 from tempo_api import TempoApi
 from time_off_reminder import TimeOffReminder
-from time_off import TimeOff, STATUS_TYPES_ALLOWED
+from time_off import TimeOff, STATUS_ALLOWED
 from logger import get_logger
 
 REG_PATTERN_PROJECT_TEAM = re.compile("PT\s(.*)")
@@ -78,7 +78,7 @@ def get_employee_time_offs(api: BambooHRApi, employee_id):
 def fetch_employee_time_offs(api: BambooHRApi, employee_id):
     now = datetime.now()
     two_months_from_now_on = now + relativedelta(months=2)
-    return api.get_employee_time_offs(employee_id, now, two_months_from_now_on, STATUS_TYPES_ALLOWED)
+    return api.get_employee_time_offs(employee_id, now, two_months_from_now_on, STATUS_ALLOWED)
 
 
 def send_reminder(project_team, smtp_config, recipients=None):
@@ -129,6 +129,7 @@ def append_team_time_offs(team: ProjectTeam, bamboo_api):
     for employee in team.members:
         if employee.id != -1:
             time_offs = get_employee_time_offs(bamboo_api, employee.id)
+            log.debug(time_offs)
             for time_off_data in time_offs:
                 employee.add_time_off(TimeOff(time_off_data, employee.photoUrl, employee.id))
     return team
@@ -177,7 +178,7 @@ def remind_time_offs(config_smtp, config_bamboo, recipients=None, **kwargs):
 
 def read_recipients(extras_file):
     try:
-        with open(extras_file, mode='r', encoding='utf8') as file:
+        with open(extras_file, mode='r', encoding='utf-8') as file:
             return json.load(file)
     finally:
         file.close()

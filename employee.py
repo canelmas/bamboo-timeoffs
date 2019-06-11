@@ -20,12 +20,12 @@ class Employee:
         return None if not self.time_offs else list(
             filter(lambda t: t.start.month == datetime.today().month
                              and not t.is_passed()
-                             and t.status in time_off.STATUS_TYPES_ALLOWED, self.time_offs))
+                             and t.status in time_off.STATUS_ALLOWED, self.time_offs))
 
     def get_time_offs_next_month(self):
         return None if not self.time_offs else list(
             filter(lambda t: t.start.month == (datetime.now() + relativedelta(months=1)).month
-                             and t.status in time_off.STATUS_TYPES_ALLOWED, self.time_offs))
+                             and t.status in time_off.STATUS_ALLOWED, self.time_offs))
 
     def __repr__(self) -> str:
         return "email={}".format(self.email)
