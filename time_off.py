@@ -4,7 +4,7 @@ DATE_FORMAT_BAMBOO = "%Y-%m-%d"
 
 STATUS_APPROVED = 'approved'
 STATUS_REQUESTED = 'requested'
-STATUS_TYPES_ALLOWED = [STATUS_APPROVED, STATUS_REQUESTED]
+STATUS_ALLOWED = [STATUS_APPROVED, STATUS_REQUESTED]
 
 LABEL_PENDING_APPROVAL = '(pending approval)'
 
@@ -21,6 +21,7 @@ class TimeOff:
         self.status = data['status']['status']
         self.employee_photo_url = employee_photo_url
         self.employee_id = employee_id
+        self.type = data['type']['name']
 
     def to_html(self):
         return """
@@ -82,7 +83,7 @@ class TimeOff:
                         <p style="margin-top: 0px; margin-bottom: 0px; font-family: Arial, Helvetica, san-serif, serif, EmojiFont; font-size: 14px; color: rgb(136, 136, 136); line-height: 15px;">
                             <a href="https://commencis.bamboohr.com/employees/employee.php?id={}&amp;utm_swu=6071" target="_blank" rel="noopener noreferrer" data-auth="NotApplicable" style="display:inline-block; color:#006ec2; text-decoration:none">{}</a>
                             <span style="color:#e6ac00; font-weight:50; font-style:italic;">{}</span><br>
-                            Vacation<br>
+                            {}<br>
                             <span style="color:#222222"></span>
                             <span style="color:#548400; font-weight:600">{}</span>
                         </p>
@@ -100,6 +101,7 @@ class TimeOff:
                    self.employee_id,
                    self.amount,
                    LABEL_PENDING_APPROVAL if self.status != STATUS_APPROVED else "",
+                   self.type,
                    self.employee_name)
 
     def is_passed(self):
