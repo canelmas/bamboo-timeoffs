@@ -35,6 +35,6 @@ class BambooHRApi(BaseApi):
             params['end'] = end_date.strftime("%Y-%m-%d")
 
         if status:
-            params['status'] = status
+            params['status'] = ','.join(status)
 
         return self.get("/time_off/requests", params=params)

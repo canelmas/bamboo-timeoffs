@@ -25,8 +25,6 @@ log = get_logger()
 
 time_off_cache = {}
 
-TIMEOFF_STATUS_PARAMS = "approved,requested"
-
 
 def read_and_populate_project_teams(project_team_folder):
     project_teams = []
@@ -153,10 +151,10 @@ def fetch_project_teams_and_remind(smtp_config, bamboo_api, tempo_api, recipient
             .map(lambda team: append_team_time_offs(team, bamboo_api)) \
             .subscribe(lambda team: send_reminder(team, smtp_config, recipients.get(team.name)))
     except smtplib.SMTPException:
-        log.exception('SMTP Error!')
+        log.exception('SMTP error occured.')
         pass
     except Exception:
-        log.exception("Something went wrong!")
+        log.exception("Something went wrong.")
 
 
 def remind_time_offs(config_smtp, config_bamboo, recipients=None, **kwargs):
