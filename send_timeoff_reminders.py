@@ -63,7 +63,7 @@ def append_employee_time_offs(employee: Employee, api: BambooHRApi):
         for time_off_data in time_offs:
             employee.add_time_off(TimeOff(time_off_data, employee.photoUrl, employee.id))
     else:
-        log.debug("Can't fetch timeoff data for {}; employee id not set!".format(employee.email))
+        log.debug("Timeoff data not fetched for {}; employee id not set!".format(employee.email))
 
 
 def get_employee_time_offs(api: BambooHRApi, employee_id):
@@ -151,10 +151,10 @@ def fetch_project_teams_and_remind(smtp_config, bamboo_api, tempo_api, recipient
             .map(lambda team: append_team_time_offs(team, bamboo_api)) \
             .subscribe(lambda team: send_reminder(team, smtp_config, recipients.get(team.name)))
     except smtplib.SMTPException:
-        log.exception('SMTP error occured.')
+        log.exception('SMTP error occurred!')
         pass
     except Exception:
-        log.exception("Something went wrong.")
+        log.exception("Something went wrong!")
 
 
 def remind_time_offs(config_smtp, config_bamboo, recipients=None, **kwargs):
